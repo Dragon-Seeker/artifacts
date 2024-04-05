@@ -10,6 +10,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.SimpleWeightedRandomList;
+import net.minecraft.world.RandomizableContainer;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
@@ -200,7 +201,10 @@ public class CampsiteFeature extends Feature<NoneFeatureConfiguration> {
             barrel = barrel.setValue(BarrelBlock.FACING, Direction.Plane.HORIZONTAL.getRandomDirection(random));
         }
         setBlock(level, pos, barrel);
-        RandomizableContainerBlockEntity.setLootTable(level, random, pos, BARREL_LOOT);
+
+        if(level.getBlockEntity(pos) instanceof RandomizableContainerBlockEntity randomizableContainer) {
+            randomizableContainer.setLootTable(BARREL_LOOT);
+        }
     }
 
     public void placeChest(WorldGenLevel level, BlockPos pos, RandomSource random, Direction facing) {
@@ -233,7 +237,9 @@ public class CampsiteFeature extends Feature<NoneFeatureConfiguration> {
             }
             setBlock(level, pos, chest);
 
-            RandomizableContainerBlockEntity.setLootTable(level, random, pos, CHEST_LOOT);
+            if(level.getBlockEntity(pos) instanceof RandomizableContainerBlockEntity randomizableContainer) {
+                randomizableContainer.setLootTable(CHEST_LOOT);
+            }
         }
     }
 }

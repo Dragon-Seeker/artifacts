@@ -7,7 +7,6 @@
   "mixins": [
     "compat.origins.ConditionFactoryAccessor",
     "item.umbrella.LivingEntityMixin",
-    "item.wearable.ItemStackMixin",
     "item.wearable.LivingEntitiesMixin",
     "item.wearable.WearableArtifactItemMixin",
     "item.wearable.bunnyhoppers.LivingEntityMixin",
@@ -17,13 +16,10 @@
     "item.wearable.flippers.LivingEntityMixin",
     "item.wearable.goldenhook.LivingEntityMixin",
     "item.wearable.kittyslippers.HurtByTargetGoalMixin",
-    "item.wearable.kittyslippers.NearestAttackableTargetGoalMixin",
-    "item.wearable.luckyscarf.ApplyBonusCountMixin",
-    "item.wearable.superstitioushat.EnchantmentHelperMixin"
+    "item.wearable.kittyslippers.NearestAttackableTargetGoalMixin"
   ],
   "client": [
     "client.GuiMixin",
-    "client.PlayerRendererMixin",
     "item.umbrella.client.ItemRendererMixin",
     "item.umbrella.client.LivingEntityRendererMixin",
     "item.wearable.heliumflamingo.client.GuiMixin"

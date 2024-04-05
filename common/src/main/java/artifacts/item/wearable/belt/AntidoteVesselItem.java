@@ -3,6 +3,7 @@ package artifacts.item.wearable.belt;
 import artifacts.item.wearable.WearableArtifactItem;
 import artifacts.registry.ModGameRules;
 import artifacts.registry.ModTags;
+import io.wispforest.accessories.api.slot.SlotReference;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffect;
@@ -26,7 +27,9 @@ public class AntidoteVesselItem extends WearableArtifactItem {
     }
 
     @Override
-    public void wornTick(LivingEntity entity, ItemStack stack) {
+    public void tick(ItemStack stack, SlotReference reference) {
+        var entity = reference.entity();
+
         if (!ModGameRules.ANTIDOTE_VESSEL_ENABLED.get()) {
             return;
         }

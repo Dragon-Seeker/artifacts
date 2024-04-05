@@ -1,5 +1,6 @@
 package artifacts.item.wearable;
 
+import io.wispforest.accessories.api.slot.SlotReference;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -59,15 +60,17 @@ public class MobEffectItem extends WearableArtifactItem {
     }
 
     @Override
-    public void wornTick(LivingEntity entity, ItemStack stack) {
+    public void tick(ItemStack stack, SlotReference reference) {
+        var entity = reference.entity();
+
         if (isEffectActive(entity) && !entity.level().isClientSide()) {
             entity.addEffect(new MobEffectInstance(mobEffect, getDuration(entity) - 1, getAmplifier(), false, false, shouldShowIcon()));
         }
     }
 
     @Override
-    public void onUnequip(LivingEntity entity, ItemStack stack) {
-        removeRemainingEffect(entity);
+    public void onUnequip(ItemStack stack, SlotReference reference) {
+        removeRemainingEffect(reference.entity());
     }
 
     private void removeRemainingEffect(LivingEntity entity) {

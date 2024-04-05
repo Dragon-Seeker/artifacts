@@ -8,13 +8,13 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'net.neoforged.gradle' version '[6.0,6.2)'
 }
 
 apply plugin: 'org.spongepowered.mixin'
 
 evaluationDependsOn(':common')
-evaluationDependsOn(':forge')
+evaluationDependsOn(':neoforge')
 
 minecraft {
 
@@ -26,8 +26,8 @@ minecraft {
         data {
             ideaModule "${rootProject.name}.${project.name}.main"
             workingDirectory file('run')
-            property 'forge.logging.markers', ''
-            property 'forge.logging.console.level', 'debug'
+            property 'neoforge.logging.markers', ''
+            property 'neoforge.logging.console.level', 'debug'
             property 'fml.earlyprogresswindow', 'false'
             args '--mod', rootProject.mod_id
             args '--client', '--server', '--validate'
@@ -38,27 +38,27 @@ minecraft {
                 "${rootProject.mod_id}" {
                     source sourceSets.main
                     source project(':common').sourceSets.main
-                    source project(':forge').sourceSets.main
+                    source project(':neoforge').sourceSets.main
                 }
             }
         }
     }
 }
 
-mixin {
-    config "mixins.${mod_id}.common.json"
-    config "mixins.${mod_id}.forge.json"
-}
+//mixin {
+//    config "mixins.${mod_id}.common.json"
+//    config "mixins.${mod_id}.neoforge.json"
+//}
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${rootProject.forge_version}"
-    implementation fg.deobf("dev.architectury:architectury-forge:$architectury_version")
+    minecraft "net.neoforged:neoforge:${rootProject.neoforge_version}"
+    implementation fg.deobf("dev.architectury:architectury-neoforge:$architectury_version")
     implementation(project(path: ':common', configuration: 'namedElements')) { transitive false }
-    implementation(project(path: ':forge', configuration: 'namedElements')) { transitive false }
+    implementation(project(path: ':neoforge', configuration: 'namedElements')) { transitive false }
 
     implementation fg.deobf("be.florens:expandability-forge:${expandability_version}")
-    implementation fg.deobf("me.shedaniel.cloth:cloth-config-forge:${cloth_config_version}")
-    implementation fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
+    implementation fg.deobf("me.shedaniel.cloth:cloth-config-neoforge:${rootProject.cloth_config_version}")
+    implementation fg.deobf("io.wispforest:accessories-neoforge:${rootProject.accessories_version}")
 }
 
 jar.finalizedBy('reobfJar')

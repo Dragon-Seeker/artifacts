@@ -1,19 +1,23 @@
 package artifacts.fabric;
 
 import artifacts.Artifacts;
+import artifacts.component.SwimData;
 import artifacts.fabric.event.SwimEventsFabric;
 import artifacts.fabric.integration.CompatHandler;
 import artifacts.fabric.registry.ModFeatures;
 import artifacts.fabric.registry.ModLootTables;
-import artifacts.fabric.trinket.WearableArtifactTrinket;
 import artifacts.item.wearable.WearableArtifactItem;
-import dev.emi.trinkets.api.TrinketsApi;
+import io.wispforest.accessories.api.AccessoriesAPI;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.fabricmc.fabric.api.loot.v2.LootTableEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.registries.BuiltInRegistries;
 
 public class ArtifactsFabric implements ModInitializer {
+
+    public static final AttachmentType<SwimData> SWIM_DATA = AttachmentRegistry.createDefaulted(Artifacts.id("swim_data"), SwimData::new);
 
     @Override
     public void onInitialize() {
@@ -31,8 +35,11 @@ public class ArtifactsFabric implements ModInitializer {
 
     private void registerTrinkets() {
         BuiltInRegistries.ITEM.stream()
-                .filter(item -> item instanceof WearableArtifactItem)
-                .forEach(item -> TrinketsApi.registerTrinket(item, new WearableArtifactTrinket((WearableArtifactItem) item)));
+                .forEach(item -> {
+                    if(item instanceof WearableArtifactItem wearableArtifactItem){
+                        AccessoriesAPI.registerAccessory(item, wearableArtifactItem);
+                    }
+                });
     }
 
     private void runCompatibilityHandlers() {

@@ -4,6 +4,7 @@ import artifacts.item.wearable.WearableArtifactItem;
 import artifacts.platform.PlatformServices;
 import artifacts.registry.ModGameRules;
 import dev.architectury.event.events.common.TickEvent;
+import io.wispforest.accessories.api.slot.SlotReference;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -55,17 +56,19 @@ public class RunningShoesItem extends WearableArtifactItem {
             AttributeInstance movementSpeed = player.getAttribute(Attributes.MOVEMENT_SPEED);
             AttributeModifier movementSpeedBonus = getSpeedBonus();
             if (movementSpeed != null && movementSpeed.hasModifier(movementSpeedBonus)) {
-                movementSpeed.removeModifier(movementSpeedBonus);
+                movementSpeed.removeModifier(movementSpeedBonus.getId());
             }
             if (stepHeight != null && stepHeight.hasModifier(STEP_HEIGHT_BONUS)) {
-                stepHeight.removeModifier(STEP_HEIGHT_BONUS);
+                stepHeight.removeModifier(STEP_HEIGHT_BONUS.getId());
             }
         }
     }
 
     @Override
     @SuppressWarnings("ConstantConditions")
-    public void wornTick(LivingEntity entity, ItemStack stack) {
+    public void tick(ItemStack stack, SlotReference reference) {
+        var entity = reference.entity();
+
         AttributeInstance stepHeight = entity.getAttribute(getStepHeightAttribute());
         AttributeInstance movementSpeed = entity.getAttribute(Attributes.MOVEMENT_SPEED);
         AttributeModifier speedBonus = getSpeedBonus();
@@ -78,10 +81,10 @@ public class RunningShoesItem extends WearableArtifactItem {
             }
         } else {
             if (movementSpeed.hasModifier(speedBonus)) {
-                movementSpeed.removeModifier(speedBonus);
+                movementSpeed.removeModifier(speedBonus.getId());
             }
             if (stepHeight.hasModifier(STEP_HEIGHT_BONUS)) {
-                stepHeight.removeModifier(STEP_HEIGHT_BONUS);
+                stepHeight.removeModifier(STEP_HEIGHT_BONUS.getId());
             }
         }
     }

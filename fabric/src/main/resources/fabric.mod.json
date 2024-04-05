@@ -28,9 +28,6 @@
     ],
     "modmenu": [
       "artifacts.fabric.integration.ModMenuIntegration"
-    ],
-    "cardinal-components": [
-      "artifacts.fabric.registry.ModComponents"
     ]
   },
   "mixins": [
@@ -39,17 +36,12 @@
   ],
   "depends": {
     "fabric": ">=0.86.1",
-    "minecraft": "1.20.1",
+    "minecraft": "1.20.4",
     "architectury": ">=9.0.7",
-    "trinkets": "*",
+    "accessories": "*",
     "cloth-config": "*"
   },
   "suggests": {
     "modmenu": "*"
-  },
-  "custom": {
-    "cardinal-components": [
-      "artifacts:swim_data"
-    ]
   }
 }

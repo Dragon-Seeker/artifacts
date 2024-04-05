@@ -1,7 +1,7 @@
 package artifacts.data.providers;
 
 import artifacts.Artifacts;
-import artifacts.forge.loot.RollLootTableModifier;
+import artifacts.neoforge.loot.RollLootTableModifier;
 import artifacts.loot.ConfigurableRandomChance;
 import artifacts.loot.EverlastingBeefChance;
 import artifacts.registry.ModItems;

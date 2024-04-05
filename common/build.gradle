@@ -6,6 +6,10 @@ loom {
     accessWidenerPath = file("src/main/resources/artifacts.accesswidener")
 }
 
+repositories {
+    mavenLocal()
+}
+
 dependencies {
     // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
     // Do NOT use other classes from fabric loader
@@ -16,6 +20,8 @@ dependencies {
     modApi("me.shedaniel.cloth:cloth-config-fabric:${cloth_config_version}") {
         exclude(group: "net.fabricmc.fabric-api")
     }
+
+    modCompileOnly("io.wispforest:accessories-fabric:${rootProject.accessories_version}")
 }
 
 publishing {

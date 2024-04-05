@@ -5,6 +5,10 @@ import artifacts.client.item.model.ArmsModel;
 import artifacts.platform.PlatformServices;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import io.wispforest.accessories.api.client.AccessoriesRendererRegistery;
+import io.wispforest.accessories.api.client.AccessoryRenderer;
+import io.wispforest.accessories.api.slot.SlotReference;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -19,7 +23,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-public class GloveArtifactRenderer implements ArtifactRenderer {
+public class GloveArtifactRenderer implements AccessoryRenderer {
 
     private final ResourceLocation defaultTexture;
     private final ResourceLocation slimTexture;
@@ -39,7 +43,7 @@ public class GloveArtifactRenderer implements ArtifactRenderer {
 
     @Nullable
     public static GloveArtifactRenderer getGloveRenderer(ItemStack stack) {
-        if (!stack.isEmpty() && PlatformServices.platformHelper.getArtifactRenderer(stack.getItem()) instanceof GloveArtifactRenderer gloveRenderer) {
+        if (!stack.isEmpty() && AccessoriesRendererRegistery.getRender(stack.getItem()) instanceof GloveArtifactRenderer gloveRenderer) {
             return gloveRenderer;
         }
         return null;
@@ -54,24 +58,14 @@ public class GloveArtifactRenderer implements ArtifactRenderer {
     }
 
     protected static boolean hasSlimArms(Entity entity) {
-        return entity instanceof AbstractClientPlayer player && player.getModelName().equals("slim");
+        return entity instanceof AbstractClientPlayer player && player.getSkin().model().name().equals("slim");
     }
 
     @Override
-    public void render(
-            ItemStack stack,
-            LivingEntity entity,
-            int slotIndex,
-            PoseStack poseStack,
-            MultiBufferSource multiBufferSource,
-            int light,
-            float limbSwing,
-            float limbSwingAmount,
-            float partialTicks,
-            float ageInTicks,
-            float netHeadYaw,
-            float headPitch
-    ) {
+    public <M extends LivingEntity> void render(boolean isRendering, ItemStack stack, SlotReference reference, PoseStack matrices, EntityModel<M> entityModel, MultiBufferSource multiBufferSource, int light, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+        var entity = reference.entity();
+        var slotIndex = reference.slot();
+
         boolean hasSlimArms = hasSlimArms(entity);
         ArmsModel model = getModel(hasSlimArms);
         InteractionHand hand = slotIndex % 2 == 0 ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
@@ -79,9 +73,9 @@ public class GloveArtifactRenderer implements ArtifactRenderer {
 
         model.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
         model.prepareMobModel(entity, limbSwing, limbSwingAmount, partialTicks);
-        ArtifactRenderer.followBodyRotations(entity, model);
+        AccessoryRenderer.followBodyRotations(entity, model);
 
-        renderArm(model, poseStack, multiBufferSource, handSide, light, hasSlimArms, stack.hasFoil());
+        renderArm(model, matrices, multiBufferSource, handSide, light, hasSlimArms, stack.hasFoil());
     }
 
     protected void renderArm(ArmsModel model, PoseStack matrixStack, MultiBufferSource buffer, HumanoidArm handSide, int light, boolean hasSlimArms, boolean hasFoil) {
@@ -90,28 +84,33 @@ public class GloveArtifactRenderer implements ArtifactRenderer {
         model.renderArm(handSide, matrixStack, vertexBuilder, light, OverlayTexture.NO_OVERLAY, 1, 1, 1, 1);
     }
 
-    public final void renderFirstPersonArm(PoseStack matrixStack, MultiBufferSource buffer, int light, AbstractClientPlayer player, HumanoidArm side, boolean hasFoil) {
-        if (!player.isSpectator()) {
-            boolean hasSlimArms = hasSlimArms(player);
-            ArmsModel model = getModel(hasSlimArms);
-
-            ModelPart arm = side == HumanoidArm.LEFT ? model.leftArm : model.rightArm;
-
-            model.setAllVisible(false);
-            arm.visible = true;
-
-            model.crouching = false;
-            model.attackTime = model.swimAmount = 0;
-            model.setupAnim(player, 0, 0, 0, 0, 0);
-            arm.xRot = 0;
-
-            renderFirstPersonArm(model, arm, matrixStack, buffer, light, hasSlimArms, hasFoil);
-        }
+    @Override
+    public boolean shouldRenderInFirstPerson(HumanoidArm arm, ItemStack stack, SlotReference reference) {
+        return !reference.entity().isSpectator();
     }
 
-    protected void renderFirstPersonArm(ArmsModel model, ModelPart arm, PoseStack matrixStack, MultiBufferSource buffer, int light, boolean hasSlimArms, boolean hasFoil) {
-        RenderType renderType = model.renderType(getTexture(hasSlimArms));
-        VertexConsumer builder = ItemRenderer.getFoilBuffer(buffer, renderType, false, hasFoil);
-        arm.render(matrixStack, builder, light, OverlayTexture.NO_OVERLAY);
-    }
+//    public final void renderFirstPersonArm(PoseStack matrixStack, MultiBufferSource buffer, int light, AbstractClientPlayer player, HumanoidArm side, boolean hasFoil) {
+//        if (!player.isSpectator()) {
+//            boolean hasSlimArms = hasSlimArms(player);
+//            ArmsModel model = getModel(hasSlimArms);
+//
+//            ModelPart arm = side == HumanoidArm.LEFT ? model.leftArm : model.rightArm;
+//
+//            model.setAllVisible(false);
+//            arm.visible = true;
+//
+//            model.crouching = false;
+//            model.attackTime = model.swimAmount = 0;
+//            model.setupAnim(player, 0, 0, 0, 0, 0);
+//            arm.xRot = 0;
+//
+//            renderFirstPersonArm(model, arm, matrixStack, buffer, light, hasSlimArms, hasFoil);
+//        }
+//    }
+//
+//    protected void renderFirstPersonArm(ArmsModel model, ModelPart arm, PoseStack matrixStack, MultiBufferSource buffer, int light, boolean hasSlimArms, boolean hasFoil) {
+//        RenderType renderType = model.renderType(getTexture(hasSlimArms));
+//        VertexConsumer builder = ItemRenderer.getFoilBuffer(buffer, renderType, false, hasFoil);
+//        arm.render(matrixStack, builder, light, OverlayTexture.NO_OVERLAY);
+//    }
 }

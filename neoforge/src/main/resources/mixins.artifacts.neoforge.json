@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "artifacts.neoforge.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "item.umbrella.UmbrellaItemMixin",
+    "item.wearable.WearableArtifactItemMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

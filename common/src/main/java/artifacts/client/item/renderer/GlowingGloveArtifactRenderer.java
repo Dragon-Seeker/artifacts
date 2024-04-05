@@ -36,10 +36,10 @@ public class GlowingGloveArtifactRenderer extends GloveArtifactRenderer {
         model.renderArm(armSide, poseStack, builder, LightTexture.pack(15, 15), OverlayTexture.NO_OVERLAY, 1, 1, 1, 1);
     }
 
-    @Override
-    protected void renderFirstPersonArm(ArmsModel model, ModelPart arm, PoseStack poseStack, MultiBufferSource multiBufferSource, int light, boolean hasSlimArms, boolean hasFoil) {
-        super.renderFirstPersonArm(model, arm, poseStack, multiBufferSource, light, hasSlimArms, hasFoil);
-        VertexConsumer builder = ItemRenderer.getFoilBuffer(multiBufferSource, model.renderType(getGlowTexture(hasSlimArms)), false, hasFoil);
-        arm.render(poseStack, builder, LightTexture.pack(15, 15), OverlayTexture.NO_OVERLAY);
-    }
+//    @Override
+//    protected void renderFirstPersonArm(ArmsModel model, ModelPart arm, PoseStack poseStack, MultiBufferSource multiBufferSource, int light, boolean hasSlimArms, boolean hasFoil) {
+//        super.renderFirstPersonArm(model, arm, poseStack, multiBufferSource, light, hasSlimArms, hasFoil);
+//        VertexConsumer builder = ItemRenderer.getFoilBuffer(multiBufferSource, model.renderType(getGlowTexture(hasSlimArms)), false, hasFoil);
+//        arm.render(poseStack, builder, LightTexture.pack(15, 15), OverlayTexture.NO_OVERLAY);
+//    }
 }

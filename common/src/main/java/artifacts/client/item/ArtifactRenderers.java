@@ -5,6 +5,9 @@ import artifacts.client.item.renderer.*;
 import artifacts.item.wearable.WearableArtifactItem;
 import artifacts.platform.PlatformServices;
 import artifacts.registry.ModItems;
+import io.wispforest.accessories.api.AccessoriesAPI;
+import io.wispforest.accessories.api.client.AccessoriesRendererRegistery;
+import io.wispforest.accessories.api.client.AccessoryRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -66,7 +69,7 @@ public class ArtifactRenderers {
         return Minecraft.getInstance().getEntityModels().bakeLayer(layerLocation);
     }
 
-    public static void register(WearableArtifactItem item, Supplier<ArtifactRenderer> rendererSupplier) {
-        PlatformServices.platformHelper.registerArtifactRenderer(item, rendererSupplier);
+    public static void register(WearableArtifactItem item, Supplier<AccessoryRenderer> rendererSupplier) {
+        AccessoriesRendererRegistery.registerRenderer(item, rendererSupplier);
     }
 }

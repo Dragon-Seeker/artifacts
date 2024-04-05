@@ -2,6 +2,7 @@ package artifacts.item.wearable.necklace;
 
 import artifacts.item.wearable.WearableArtifactItem;
 import artifacts.registry.ModGameRules;
+import io.wispforest.accessories.api.slot.SlotReference;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
@@ -30,7 +31,9 @@ public class CrossNecklaceItem extends WearableArtifactItem {
     }
 
     @Override
-    public void wornTick(LivingEntity entity, ItemStack stack) {
+    public void tick(ItemStack stack, SlotReference reference) {
+        var entity = reference.entity();
+
         if (entity.invulnerableTime <= 10) {
             setCanApplyBonus(stack, true);
         } else if (canApplyBonus(entity, stack)) {

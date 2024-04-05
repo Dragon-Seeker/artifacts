@@ -5,11 +5,12 @@ import artifacts.registry.ModLootConditions;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
+import com.mojang.serialization.Codec;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 
-public class EverlastingBeefChance  implements LootItemCondition {
+public class EverlastingBeefChance implements LootItemCondition {
 
     private static final EverlastingBeefChance INSTANCE = new EverlastingBeefChance();
 
@@ -29,14 +30,5 @@ public class EverlastingBeefChance  implements LootItemCondition {
         return () -> INSTANCE;
     }
 
-    public static class Serializer implements net.minecraft.world.level.storage.loot.Serializer<EverlastingBeefChance> {
-
-        public void serialize(JsonObject object, EverlastingBeefChance condition, JsonSerializationContext context) {
-
-        }
-
-        public EverlastingBeefChance deserialize(JsonObject object, JsonDeserializationContext context) {
-            return INSTANCE;
-        }
-    }
+    public static final Codec<EverlastingBeefChance> CODEC = Codec.unit(INSTANCE);
 }

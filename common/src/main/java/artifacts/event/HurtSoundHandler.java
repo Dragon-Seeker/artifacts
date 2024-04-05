@@ -18,7 +18,7 @@ public class HurtSoundHandler {
     }
 
     private static void playHurtSound(WearableArtifactItem item, LivingEntity entity, SoundEvent soundEvent, float volume, float pitch) {
-        if (PlatformServices.platformHelper.isEquippedBy(entity, item)) {
+        if (item.isEquippedBy(entity)) {
             entity.playSound(soundEvent, volume, pitch );
         }
     }

@@ -1,7 +1,9 @@
 package artifacts.item;
 
 import artifacts.Artifacts;
+import artifacts.item.wearable.WearableArtifactItem;
 import artifacts.registry.ModItems;
+import io.wispforest.accessories.api.Accessory;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -17,7 +19,7 @@ import net.minecraft.world.level.Level;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class ArtifactItem extends Item {
+public abstract class ArtifactItem extends Item  {
 
     @SuppressWarnings("UnstableApiUsage")
     public ArtifactItem(Properties properties) {
@@ -30,7 +32,7 @@ public abstract class ArtifactItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, Level world, List<Component> tooltipList, TooltipFlag flags) {
-        if (Artifacts.CONFIG.client.showTooltips) {
+        if (Artifacts.CONFIG.client.showTooltips && !(this instanceof WearableArtifactItem)) {
             List<MutableComponent> tooltip = new ArrayList<>();
             addTooltip(stack, tooltip);
             tooltip.forEach(line -> tooltipList.add(line.withStyle(ChatFormatting.GRAY)));
@@ -57,7 +59,9 @@ public abstract class ArtifactItem extends Item {
         return BuiltInRegistries.ITEM.getKey(this).getPath();
     }
 
-    protected abstract boolean isCosmetic();
+    protected boolean isCosmetic() {
+        return false;
+    }
 
     public boolean isOnCooldown(LivingEntity entity) {
         if (entity instanceof Player player) {

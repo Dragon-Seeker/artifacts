@@ -4,6 +4,7 @@ import artifacts.item.wearable.WearableArtifactItem;
 import artifacts.registry.ModGameRules;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.PlayerEvent;
+import io.wispforest.accessories.api.slot.SlotReference;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -32,7 +33,9 @@ public class UniversalAttractorItem extends WearableArtifactItem {
     }
 
     @Override
-    public void wornTick(LivingEntity entity, ItemStack stack) {
+    public void tick(ItemStack stack, SlotReference reference) {
+        var entity = reference.entity();
+
         if (
                 !ModGameRules.UNIVERSAL_ATTRACTOR_ENABLED.get()
                 || !(entity instanceof Player player)

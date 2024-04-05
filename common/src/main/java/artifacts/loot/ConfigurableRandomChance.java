@@ -5,6 +5,10 @@ import artifacts.registry.ModLootConditions;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.RecordBuilder;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
@@ -30,14 +34,8 @@ public record ConfigurableRandomChance(float defaultProbability) implements Loot
         return () -> new ConfigurableRandomChance(probability);
     }
 
-    public static class Serializer implements net.minecraft.world.level.storage.loot.Serializer<ConfigurableRandomChance> {
-
-        public void serialize(JsonObject object, ConfigurableRandomChance condition, JsonSerializationContext context) {
-            object.addProperty("default_probability", condition.defaultProbability);
-        }
-
-        public ConfigurableRandomChance deserialize(JsonObject object, JsonDeserializationContext context) {
-            return new ConfigurableRandomChance(GsonHelper.getAsFloat(object, "default_probability"));
-        }
-    }
+    public static final Codec<ConfigurableRandomChance> CODEC = RecordCodecBuilder.create(instance -> {
+        return instance.group(Codec.FLOAT.fieldOf("default_probability").forGetter(ConfigurableRandomChance::defaultProbability))
+                .apply(instance, ConfigurableRandomChance::new);
+    });
 }

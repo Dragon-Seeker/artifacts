@@ -2,6 +2,7 @@ package artifacts.item.wearable;
 
 import artifacts.registry.ModGameRules;
 import artifacts.registry.ModSoundEvents;
+import io.wispforest.accessories.api.slot.SlotReference;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -16,7 +17,9 @@ public class WhoopeeCushionItem extends WearableArtifactItem {
     }
 
     @Override
-    public void wornTick(LivingEntity entity, ItemStack stack) {
+    public void tick(ItemStack stack, SlotReference reference) {
+        var entity = reference.entity();
+
         if (!entity.level().isClientSide()) {
             CompoundTag tag = stack.getOrCreateTag();
             if (tag.getBoolean("HasFarted") && !entity.isShiftKeyDown()) {

@@ -20,4 +20,7 @@ dependencies {
     modCompileOnly "be.florens:expandability-fabric:${rootProject.expandability_version}"
 
     compileOnly "com.electronwill.night-config:toml:${rootProject.night_config_version}"
+    modCompileOnly("dev.emi:trinkets:${rootProject.trinkets_version}"){
+        exclude(group: "net.fabricmc.fabric-api")
+    }
 }

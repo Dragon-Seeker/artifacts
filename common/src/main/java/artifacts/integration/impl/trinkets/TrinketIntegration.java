@@ -1,50 +1,46 @@
-package artifacts.fabric.integration;
+package artifacts.integration.impl.trinkets;
 
-import artifacts.client.item.renderer.ArtifactRenderer;
+import artifacts.client.CosmeticsHelper;
 import artifacts.event.ArtifactEvents;
-import artifacts.fabric.client.CosmeticsHelper;
-import artifacts.fabric.trinket.WearableArtifactTrinket;
+import artifacts.integration.BaseEquipmentIntegration;
 import artifacts.item.WearableArtifactItem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import artifacts.platform.PlatformServices;
+import artifacts.util.DamageSourceHelper;
 import dev.emi.trinkets.api.*;
-import dev.emi.trinkets.api.client.TrinketRenderer;
-import dev.emi.trinkets.api.client.TrinketRendererRegistry;
 import dev.emi.trinkets.api.event.TrinketEquipCallback;
 import dev.emi.trinkets.api.event.TrinketUnequipCallback;
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public class TrinketsIntegration {
+public class TrinketIntegration extends BaseEquipmentIntegration {
 
-    public static void setup() {
-        BuiltInRegistries.ITEM.stream()
-                .filter(item -> item instanceof WearableArtifactItem)
-                .forEach(item -> TrinketsApi.registerTrinket(item, new WearableArtifactTrinket((WearableArtifactItem) item)));
+    public static final TrinketIntegration INSTANCE = new TrinketIntegration();
+
+    @Override
+    public void setup() {
+        PlatformServices.platformHelper.registryEntryAddCallback(item -> {
+            if (item instanceof WearableArtifactItem wearableArtifactItem) {
+                TrinketsApi.registerTrinket(item, new WearableArtifactTrinket(wearableArtifactItem));
+            }
+        });
 
         TrinketEquipCallback.EVENT.register((stack, slot, entity) -> ArtifactEvents.onItemChanged(entity, ItemStack.EMPTY, stack));
         TrinketUnequipCallback.EVENT.register((stack, slot, entity) -> ArtifactEvents.onItemChanged(entity, stack, ItemStack.EMPTY));
     }
 
-    public static boolean equipTrinket(LivingEntity entity, ItemStack stack) {
-        return TrinketItem.equipItem(entity, stack);
-    }
-
-    public static Stream<ItemStack> findAllEquippedBy(LivingEntity entity) {
+    @Override
+    public Stream<ItemStack> findAllEquippedBy(LivingEntity entity, Predicate<ItemStack> predicate) {
         return TrinketsApi.getTrinketComponent(entity)
                 .map(TrinketComponent::getAllEquipped)
                 .orElse(List.of())
@@ -52,7 +48,8 @@ public class TrinketsIntegration {
                 .map(Tuple::getB);
     }
 
-    public static void iterateEquippedTrinkets(LivingEntity entity, Consumer<ItemStack> consumer) {
+    @Override
+    public void iterateEquippedAccessories(LivingEntity entity, Consumer<ItemStack> consumer) {
         TrinketsApi.getTrinketComponent(entity).ifPresent(component -> {
             for (Map<String, TrinketInventory> map : component.getInventory().values()) {
                 for (TrinketInventory inventory : map.values()) {
@@ -67,7 +64,8 @@ public class TrinketsIntegration {
         });
     }
 
-    public static <T> T reduceTrinkets(LivingEntity entity, T init, BiFunction<ItemStack, T, T> f) {
+    @Override
+    public <T> T reduceAccessories(LivingEntity entity, T init, BiFunction<ItemStack, T, T> f) {
         Optional<TrinketComponent> component = TrinketsApi.getTrinketComponent(entity);
         if (component.isPresent()) {
             for (Map<String, TrinketInventory> map : component.get().getInventory().values()) {
@@ -84,7 +82,13 @@ public class TrinketsIntegration {
         return init;
     }
 
-    public static boolean isVisibleOnHand(LivingEntity entity, InteractionHand hand, Item item) {
+    @Override
+    public boolean equipAccessory(LivingEntity entity, ItemStack stack) {
+        return TrinketItem.equipItem(entity, stack);
+    }
+
+    @Override
+    public boolean isVisibleOnHand(LivingEntity entity, InteractionHand hand, Item item) {
         return TrinketsApi.getTrinketComponent(entity).stream()
                 .flatMap(component -> component.getAllEquipped().stream())
                 .filter(tuple -> tuple.getA().inventory().getSlotType().getGroup().equals(
@@ -95,28 +99,19 @@ public class TrinketsIntegration {
                 .anyMatch(tuple -> true);
     }
 
-    public static void registerArtifactRenderer(Item item, Supplier<ArtifactRenderer> rendererSupplier) {
-        TrinketRendererRegistry.registerRenderer(item, new ArtifactTrinketRenderer(rendererSupplier.get()));
+    @Override
+    public String name() {
+        return "trinkets";
     }
 
-    @Nullable
-    public static ArtifactRenderer getArtifactRenderer(Item item) {
-        Optional<TrinketRenderer> renderer = TrinketRendererRegistry.getRenderer(item);
-        if (renderer.isPresent() && renderer.get() instanceof ArtifactTrinketRenderer artifactTrinketRenderer) {
-            return artifactTrinketRenderer.renderer();
-        }
-        return null;
-    }
-
-    private record ArtifactTrinketRenderer(ArtifactRenderer renderer) implements TrinketRenderer {
+    public static record WearableArtifactTrinket(WearableArtifactItem item) implements Trinket {
 
         @Override
-        public void render(ItemStack stack, SlotReference slotReference, EntityModel<? extends LivingEntity> entityModel, PoseStack poseStack, MultiBufferSource multiBufferSource, int light, LivingEntity entity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-            if (CosmeticsHelper.areCosmeticsToggledOffByPlayer(stack)) {
-                return;
+        public TrinketEnums.DropRule getDropRule(ItemStack stack, SlotReference slot, LivingEntity entity) {
+            if (DamageSourceHelper.shouldDestroyWornItemsOnDeath(entity)) {
+                return TrinketEnums.DropRule.DESTROY;
             }
-            int index = slotReference.index() + (slotReference.inventory().getSlotType().getGroup().equals("hand") ? 0 : 1);
-            renderer.render(stack, entity, index, poseStack, multiBufferSource, light, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch);
+            return Trinket.super.getDropRule(stack, slot, entity);
         }
     }
 }

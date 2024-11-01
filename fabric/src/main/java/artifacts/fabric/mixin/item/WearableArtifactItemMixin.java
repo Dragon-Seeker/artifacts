@@ -1,7 +1,7 @@
 package artifacts.fabric.mixin.item;
 
-import artifacts.fabric.client.CosmeticsHelper;
-import artifacts.fabric.integration.TrinketsIntegration;
+import artifacts.client.CosmeticsHelper;
+import artifacts.integration.impl.trinkets.TrinketIntegration;
 import artifacts.item.WearableArtifactItem;
 import artifacts.util.AbilityHelper;
 import net.fabricmc.loader.api.FabricLoader;
@@ -38,7 +38,7 @@ public abstract class WearableArtifactItemMixin extends Item {
         ItemStack stack = player.getItemInHand(hand);
         if (!stack.has(DataComponents.FOOD)
                 && FabricLoader.getInstance().isModLoaded("trinkets")
-                && TrinketsIntegration.equipTrinket(player, stack)
+                && TrinketIntegration.INSTANCE.equipAccessory(player, stack)
         ) {
             player.playSound(getEquipSound(), 1, getEquipSoundPitch());
 

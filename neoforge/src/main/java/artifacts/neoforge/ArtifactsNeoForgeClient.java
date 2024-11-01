@@ -3,10 +3,11 @@ package artifacts.neoforge;
 import artifacts.Artifacts;
 import artifacts.ArtifactsClient;
 import artifacts.client.item.ArtifactRenderers;
+import artifacts.integration.impl.trinkets.TrinketRenderersReloadHook;
 import artifacts.neoforge.client.ArtifactCooldownOverlayRenderer;
 import artifacts.neoforge.client.HeliumFlamingoOverlayRenderer;
 import artifacts.neoforge.client.UmbrellaArmPoseHandler;
-import artifacts.neoforge.integration.curios.CuriosIntegrationClient;
+import artifacts.neoforge.integration.curios.CuriosClientIntegration;
 import artifacts.registry.ModItems;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.neoforged.bus.api.IEventBus;
@@ -14,6 +15,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 
 public class ArtifactsNeoForgeClient {
 
@@ -23,9 +25,11 @@ public class ArtifactsNeoForgeClient {
         modBus.addListener(this::onClientSetup);
         modBus.addListener(this::onRegisterGuiOverlays);
 
-        if (ModList.get().isLoaded("curios")) {
-            CuriosIntegrationClient.setup(modBus);
-        }
+        modBus.addListener((AddReloadListenerEvent event) -> {
+            if (ModList.get().isLoaded("trinkets")) {
+                event.addListener(TrinketRenderersReloadHook.INSTANCE);
+            }
+        });
     }
 
     public void onClientSetup(FMLClientSetupEvent event) {

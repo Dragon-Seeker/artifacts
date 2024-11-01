@@ -47,6 +47,8 @@ dependencies {
 
     // Compat & integration
     modCompileOnly("io.github.apace100:apoli:2.12.0-alpha.11+mc.1.21.x")
+
+    modImplementation("io.wispforest:accessories-fabric:${project.accessories_version}")
 }
 
 processResources {

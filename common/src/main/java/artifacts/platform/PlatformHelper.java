@@ -85,6 +85,9 @@ public interface PlatformHelper {
             TrinketIntegration.INSTANCE.registerIntegration();
         }
 
+        if (PlatformServices.platformHelper.isModLoaded("accessories")) {
+            AccessoriesIntegration.INSTANCE.registerIntegration();
+        }
     }
 
     default void setupClientIntegratons() {
@@ -92,5 +95,8 @@ public interface PlatformHelper {
             TrinketClientIntegration.INSTANCE.registerIntegration();
         }
 
+        if (PlatformServices.platformHelper.isModLoaded("accessories")) {
+            AccessoriesClientIntegration.INSTANCE.registerIntegration();
+        }
     }
 }
